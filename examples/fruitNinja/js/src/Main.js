@@ -9,9 +9,18 @@ function loadAssets()
 };
 function init()
 {
+	if (window.innerWidth < window.innerHeight) {
+		gameHeight = window.innerWidth * gameWidth / gameHeight
+		gameWidth = window.innerWidth
+	} else {
+		gameWidth = window.innerHeight * gameHeight / gameWidth
+		gameHeight = window.innerHeight
+	}
+
+
 	document.getElementById("loading").style.display='none';
 	document.getElementById("info").style.display='block';
-	
+
 	//canvas
 	topCanvas=document.getElementById("top");
 	topCanvas.style.display="block";
@@ -19,14 +28,14 @@ function init()
 	topCanvas.height=gameHeight;
 	topContext=topCanvas.getContext("2d");
 	topContext.globalCompositeOperation = "lighter";
-	
-	
+
+
 	middleCanvas=document.getElementById("middle");
 	middleCanvas.style.display="block";
 	middleCanvas.width=gameWidth;
 	middleCanvas.height=gameHeight;
 	middleContext=middleCanvas.getContext("2d");
-	
+
 	bottomCanvas=document.getElementById("bottom");
 	bottomCanvas.style.display="block";
 	bottomCanvas.style.dispaly="none";
@@ -36,7 +45,7 @@ function init()
 	bottomContext.fillStyle="#f6c223";
 	bottomContext.textAlign="left";
 	bottomContext.textBaseline="top";
-	
+
 	//particle system
 	particleSystem = new SPP.ParticleSystem();
 	particleSystem.start();
@@ -47,7 +56,7 @@ function init()
 	bombSystem=new SPP.ParticleSystem();
 	bombSystem.start();
 	gravity = new SPP.Gravity(0.15);
-	
+
 	//data
 	if (typeof chrome.storage != "undefined")
 		storage = chrome.storage.local;
@@ -60,7 +69,7 @@ function init()
 	gameLife=3;
 	ui_gamelifeTexture=assetsManager["gamelife-3"];
 	gameLevel=0.1;
-	
+
     // fps
     stats = new Stats();
     stats.domElement.style.position = 'absolute';
@@ -68,16 +77,16 @@ function init()
     stats.domElement.style.top = '0px';
     document.body.appendChild( stats.domElement );
 
-	
+
 	// Use hand tracking or mouse to control
 	topCanvas.addEventListener('mousemove', mousemove, false);
 	handtracking = new HandTracking(topCanvas.width, topCanvas.height);
   handtracking.tracker.params.simple = true;
 	handtracking.addEventListener('handmove', handmove);
-	
+
   render();
 	enterGame();
-	
+
 	initControl();
 };
 function enterGame()
@@ -96,11 +105,11 @@ function resetGameData()
 function startGame(e)
 {
 	hideStartGameUI();
-	
+
 	resetGameData();
 	showScoreUI();
 	gameState=GAME_PLAYING;
-	
+
 }
 function renderTimer()
 {
@@ -109,7 +118,7 @@ function renderTimer()
 	if(timer>=interval)
 	{
 		timer=0;
-		throwObject();	
+		throwObject();
 	}
 };
 function throwObject()
@@ -183,10 +192,10 @@ function handmove(e) {
 	buildBladeParticle(e.x, e.y);
 }
 //render canvas
-function render() 
+function render()
 {
 	requestAnimationFrame(render);
-  
+
 	topContext.clearRect(0,0,gameWidth,gameHeight);
 	middleContext.clearRect(0,0,gameWidth,gameHeight);
 	bottomContext.clearRect(0,0,gameWidth,gameHeight);
@@ -197,7 +206,7 @@ function render()
 	bombSystem.render();
 	particleSystem.render();
 	bladeSystem.render();
-	
+
 	buildColorBlade(bladeColor,bladeWidth);
 	collideTest();
 	levelUpdate();
